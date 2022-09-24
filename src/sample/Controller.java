@@ -151,10 +151,42 @@ public class Controller {
         return timeToErr.size() / ((B + 1) * sumTimeToErr - sumTimeToErrI);
     }
 
-    protected int initialErr(ArrayList<Double> timeToErr) { // Число изначальных ошибок программы ("В") //
+    protected int initialErr(ArrayList<Double> timeToErr) {// Число изначальных ошибок программы ("В")
+        // Введём переменную А, которая будет состоять из суммы ( i * Xi) от 1 до n, делённой на сумму Xi от 1 до n //
+        Double sumTimeToErr = 0.00; // Сумма Xi от 1 до n //
+        // подстановка временных переменных перед вычислением //
+        for ( Double elemXi:timeToErr) {
+            sumTimeToErr += elemXi;
+        }
 
-        //todo код функции, сейчас возвращает 1, чтобы не выдавало ошибку
-        return 1;
+        Double sumTimeToErrI = 0.00; // Сумма ( i * Xi) от 1 до n //
+        for (int index = 0; index < timeToErr.size(); index ++) {
+            sumTimeToErrI += (double)(index + 1) * timeToErr.get(index);
+        }
+
+        double tempA = sumTimeToErrI / sumTimeToErr; // Переменная А //
+        if(tempA <= (timeToErr.size() + 1)/2){
+            return 0; // Возврат в случае, если B не имеет конечного решения
+        }
+
+        int B; // Число ошибок
+        double difference = 999999.00; // Разница между Fn и Gn (Fn является суммой 1 / m - i, а Gn - это n / m - A) *Пояснение* m = B + 1; n - число найденных ошибок */Пояснение*
+        for(int i = 1;; i++){ // Найдём ближайшее к нулю значение разницы между f и g
+            int m = timeToErr.size() + i;
+            double g = timeToErr.size() / (m - tempA);
+            double f = 0.00;
+            for (int j = 1; j <= timeToErr.size(); j++) {
+                f += 1.00 / (double)(m - j);
+            }
+            double tempDifference = Math.abs(f - g);
+            if(tempDifference < difference){
+                difference = tempDifference;
+            }
+            if(tempDifference > difference){
+                return B = m - 1 - 1; // Второй раз "-1" связано с тем, что следующая итерация для сравнения разницы уже произошла
+            }
+        }
+
     }
 
     protected double endOfTest(double K, int B, int n) { // Окончание теста
@@ -163,6 +195,10 @@ public class Controller {
             sum += (1 / i);
         }
         return (1 / K) * (double) sum;
+    }
+
+    protected double averageTime(double K, int B, int n){ // Среднее время (интервал Х) обнаружения до обнаружения следующей ошибки
+        return 1 / (K * (double)(B - n));
     }
 
 }
